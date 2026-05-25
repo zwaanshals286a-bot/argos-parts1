@@ -1,1 +1,106 @@
 
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ARGOS Bedrijf – Gebruikte Auto Onderdelen</title>
+    <style>
+        :root{--p:#F97316;--s:#1a1a2e;--g:#22C55E;--w:#fff}
+        *{margin:0;padding:0;box-sizing:border-box}
+        body{font-family:Arial,sans-serif;background:#f1f5f9}
+        .topbar{background:var(--s);color:white;padding:8px 20px;font-size:13px;display:flex;justify-content:space-between;flex-wrap:wrap}
+        .header{background:white;padding:15px 20px;display:flex;justify-content:space-between;align-items:center;box-shadow:0 2px 10px rgba(0,0,0,.1);position:sticky;top:0;z-index:100}
+        .logo{font-size:24px;font-weight:800;color:var(--s)}.logo span{color:var(--p)}
+        .container{max-width:1200px;margin:0 auto;padding:20px}
+        .hero{background:linear-gradient(135deg,var(--s),#16213e);color:white;padding:80px 20px;text-align:center}
+        .hero h1{font-size:42px;margin-bottom:15px}.hero span{color:var(--p)}.hero p{font-size:18px;opacity:0.9}
+        .search-box{background:white;border-radius:16px;padding:12px;max-width:650px;margin:30px auto 0;display:flex;gap:10px;box-shadow:0 10px 30px rgba(0,0,0,.3)}
+        .search-box input{flex:1;padding:14px;border:2px solid #e2e8f0;border-radius:10px;font-size:16px}
+        .search-box button{background:var(--p);color:white;border:none;padding:14px 28px;border-radius:10px;font-weight:600;cursor:pointer}
+        .products{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:24px;margin-top:30px}
+        .product-card{background:white;border-radius:16px;overflow:hidden;box-shadow:0 2px 10px rgba(0,0,0,.05);transition:.3s}
+        .product-card:hover{transform:translateY(-5px);box-shadow:0 15px 30px rgba(0,0,0,.15)}
+        .product-img{height:200px;background:#e2e8f0;position:relative;overflow:hidden}
+        .product-img img{width:100%;height:100%;object-fit:cover}
+        .product-badge{position:absolute;top:10px;left:10px;background:var(--g);color:white;padding:4px 10px;border-radius:20px;font-size:11px;font-weight:600}
+        .product-body{padding:20px}
+        .product-brand{font-size:12px;color:#94a3b8;text-transform:uppercase;margin-bottom:5px}
+        .product-title{font-weight:600;font-size:16px;margin-bottom:5px}
+        .product-oem{font-size:12px;color:#94a3b8;margin-bottom:10px}
+        .product-price{font-size:24px;font-weight:800;color:var(--p)}
+        .product-old{font-size:14px;color:#94a3b8;text-decoration:line-through;margin-left:8px}
+        .product-stock{font-size:12px;margin:8px 0}.in-stock{color:var(--g)}.low-stock{color:var(--p)}
+        .btn-cart{width:100%;background:var(--p);color:white;border:none;padding:12px;border-radius:8px;cursor:pointer;font-weight:600;margin-top:10px}
+        .cart-sidebar{position:fixed;top:0;right:-400px;width:380px;height:100vh;background:white;z-index:200;transition:.3s;box-shadow:-5px 0 20px rgba(0,0,0,.2);display:flex;flex-direction:column}
+        .cart-sidebar.open{right:0}
+        .cart-overlay{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:199;display:none}
+        .cart-overlay.open{display:block}
+        .cart-header{padding:20px;border-bottom:1px solid #e2e8f0;display:flex;justify-content:space-between}
+        .cart-items{flex:1;overflow-y:auto;padding:20px}
+        .cart-footer{padding:20px;border-top:1px solid #e2e8f0}
+        .cart-total{display:flex;justify-content:space-between;font-size:20px;font-weight:700;margin-bottom:15px}
+        .btn-checkout{width:100%;background:var(--g);color:white;border:none;padding:15px;border-radius:10px;font-size:16px;font-weight:600;cursor:pointer}
+        .lang-switch{position:fixed;top:15px;right:15px;z-index:300;background:white;border-radius:30px;padding:5px;box-shadow:0 5px 20px rgba(0,0,0,.2);display:flex}
+        .lang-btn{padding:8px 16px;border:none;background:transparent;border-radius:25px;cursor:pointer;font-weight:600;font-size:13px}
+        .lang-btn.active{background:var(--p);color:white}
+        .footer{background:var(--s);color:white;padding:40px 20px;text-align:center;margin-top:60px}
+        .toast{position:fixed;bottom:30px;right:30px;background:var(--g);color:white;padding:15px 25px;border-radius:10px;z-index:300;animation:slide .3s}
+        @keyframes slide{from{transform:translateY(20px);opacity:0}to{transform:translateY(0);opacity:1}}
+        @media(max-width:768px){.hero h1{font-size:28px}.cart-sidebar{width:100%;right:-100%}.search-box{flex-direction:column}}
+    </style>
+</head>
+<body>
+    <div class="lang-switch">
+        <button class="lang-btn active" onclick="setLang('nl')">🇳🇱 NL</button>
+        <button class="lang-btn" onclick="setLang('en')">🇬🇧 EN</button>
+    </div>
+    <div class="topbar">
+        <div>✓ Gecertificeerd | 🚚 Gratis verzending vanaf €50 | 🔄 14 dagen retour</div>
+        <div>📞 020-1234567 | ✉️ sssssenator@gmail.com</div>
+    </div>
+    <header class="header">
+        <div class="logo">ARGOS <span>Bedrijf</span></div>
+        <button onclick="toggleCart()" style="background:#f1f5f9;border:none;width:44px;height:44px;border-radius:50%;font-size:20px;cursor:pointer;position:relative">🛒<span id="cartBadge" style="position:absolute;top:-5px;right:-5px;background:red;color:white;width:20px;height:20px;border-radius:50%;font-size:11px;display:none">0</span></button>
+    </header>
+    <section class="hero">
+        <h1 id="heroTitle">Vind <span>Gebruikte Auto Onderdelen</span></h1>
+        <p id="heroSub">ARGOS Bedrijf – Uw specialist in gebruikte auto onderdelen. Kwaliteit en snelle levering.</p>
+        <div class="search-box">
+            <input type="text" id="searchInput" placeholder="Zoek op OEM, onderdeel of merk..." onkeyup="if(event.key==='Enter')search()">
+            <button onclick="search()">🔍</button>
+        </div>
+    </section>
+    <div class="container">
+        <h2 style="text-align:center;margin-bottom:20px" id="prodTitle">Uitgelichte Onderdelen</h2>
+        <div class="products" id="productsGrid"></div>
+    </div>
+    <div class="cart-overlay" id="cartOverlay" onclick="toggleCart()"></div>
+    <div class="cart-sidebar" id="cartSidebar">
+        <div class="cart-header"><h3 id="cartTitle">🛒 Winkelwagen</h3><button onclick="toggleCart()" style="border:none;background:none;font-size:24px;cursor:pointer">&times;</button></div>
+        <div class="cart-items" id="cartItems"><p style="text-align:center;color:#94a3b8" id="cartEmpty">Winkelwagen is leeg</p></div>
+        <div class="cart-footer"><div class="cart-total"><span id="totalLabel">Totaal:</span><span id="cartTotal">€0,00</span></div><button class="btn-checkout" onclick="checkout()" id="checkoutBtn">🔒 Bestellen met iDEAL</button></div>
+    </div>
+    <footer class="footer">
+        <p>📍 Magazijnweg 3, 2404 CE Alphen aan den Rijn | ✉️ sssssenator@gmail.com</p>
+        <p style="margin-top:10px">&copy; 2025 ARGOS Bedrijf. Alle rechten voorbehouden.</p>
+    </footer>
+    <script>
+        let products=[],cart=JSON.parse(localStorage.getItem('argos_cart')||'[]'),lang='nl';
+        const t={nl:{heroTitle:'Vind <span>Gebruikte Auto Onderdelen</span>',heroSub:'ARGOS Bedrijf – Uw specialist in gebruikte auto onderdelen.',prodTitle:'Uitgelichte Onderdelen',cartTitle:'🛒 Winkelwagen',totalLabel:'Totaal:',checkoutBtn:'🔒 Bestellen met iDEAL',cartEmpty:'Winkelwagen is leeg',added:'toegevoegd!',searchPlaceholder:'Zoek op OEM, onderdeel of merk...',cond_used:'Gebruikt',cond_refurbished:'Gereviseerd',cond_new:'Nieuw',inStock:'op voorraad',last:'Laatste!'},en:{heroTitle:'Find <span>Used Car Parts</span>',heroSub:'ARGOS Bedrijf – Your specialist in used car parts.',prodTitle:'Featured Parts',cartTitle:'🛒 Shopping Cart',totalLabel:'Total:',checkoutBtn:'🔒 Order with iDEAL',cartEmpty:'Cart is empty',added:'added!',searchPlaceholder:'Search by OEM, part or brand...',cond_used:'Used',cond_refurbished:'Refurbished',cond_new:'New',inStock:'in stock',last:'Last!'}};
+        function setLang(l){lang=l;document.querySelectorAll('.lang-btn').forEach(b=>b.classList.toggle('active',b.textContent.trim().toLowerCase().includes(l)));['heroTitle','heroSub','prodTitle','cartTitle','totalLabel','checkoutBtn','cartEmpty'].forEach(id=>{let el=document.getElementById(id);if(el)el.innerHTML=t[l][id]});document.getElementById('searchInput').placeholder=t[l].searchPlaceholder;render();updateCart()}
+        async function load(){products=await(await fetch('/api/products')).json();render()}
+        function render(f=null){let list=f||products;document.getElementById('productsGrid').innerHTML=list.map(p=>{let title=lang==='nl'?p.nl:p.en;let cond=t[lang]['cond_'+p.cond]||p.cond;let st=p.stock>2?'<span class=in-stock>✓ '+p.stock+' '+t[lang].inStock+'</span>':p.stock>0?'<span class=low-stock>⚠ '+t[lang].last+'</span>':'<span style=color:red>✗ Uitverkocht</span>';return'<div class=product-card><div class=product-img><img src=https://images.unsplash.com/photo-1558618666-fcd25c85f82e?w=400 alt="'+title+'"><span class=product-badge>'+cond+'</span></div><div class=product-body><div class=product-brand>'+p.brand.toUpperCase()+' • '+p.year+'</div><div class=product-title>'+title+'</div><div class=product-oem>📦 OEM: '+p.oem+'</div><span class=product-price>€'+p.price.toFixed(2).replace('.',',')+'</span>'+(p.old?'<span class=product-old>€'+p.old.toFixed(2).replace('.',',')+'</span>':'')+'<div class=product-stock>'+st+'</div><button class=btn-cart onclick=add('+p.id+') '+(p.stock===0?'disabled':'')+'>🛒 In winkelwagen</button></div></div>'}).join('')}
+        function add(id){let p=products.find(x=>x.id===id);if(!p||p.stock===0)return;let ex=cart.find(x=>x.id===id);if(ex){if(ex.qty<p.stock)ex.qty++}else cart.push({id:p.id,title:p.nl,titleEn:p.en,price:p.price,stock:p.stock,qty:1});saveCart();updateCart();showToast('✅ '+(lang==='nl'?p.nl:p.en)+' '+t[lang].added)}
+        function remove(id){cart=cart.filter(x=>x.id!==id);saveCart();updateCart()}
+        function updateQty(id,d){let it=cart.find(x=>x.id===id);if(!it)return;let n=it.qty+d;if(n<=0)remove(id);else if(n<=it.stock){it.qty=n;saveCart();updateCart()}}
+        function saveCart(){localStorage.setItem('argos_cart',JSON.stringify(cart))}
+        function updateCart(){let c=cart.reduce((s,i)=>s+i.qty,0),b=document.getElementById('cartBadge');b.style.display=c>0?'flex':'none';if(c>0)b.textContent=c;let items=document.getElementById('cartItems');if(cart.length===0)items.innerHTML='<p style=text-align:center;color:#94a3b8>'+t[lang].cartEmpty+'</p>';else items.innerHTML=cart.map(i=>'<div style=display:flex;gap:10px;padding:10px;border-bottom:1px solid #eee><div style=flex:1><b>'+(lang==='nl'?i.title:i.titleEn)+'</b><br>€'+(i.price*i.qty).toFixed(2).replace('.',',')+'<br><button onclick=updateQty('+i.id+',-1) style=border:1px solid #ddd;background:white;width:25px;height:25px;cursor:pointer>-</button> '+i.qty+' <button onclick=updateQty('+i.id+',1) style=border:1px solid #ddd;background:white;width:25px;height:25px;cursor:pointer>+</button> <button onclick=remove('+i.id+') style=border:none;background:none;color:red;cursor:pointer>🗑</button></div></div>').join('');document.getElementById('cartTotal').textContent='€'+cart.reduce((s,i)=>s+i.price*i.qty,0).toFixed(2).replace('.',',')}
+        function toggleCart(){document.getElementById('cartSidebar').classList.toggle('open');document.getElementById('cartOverlay').classList.toggle('open')}
+        function checkout(){if(cart.length===0)return;let tot=cart.reduce((s,i)=>s+i.price*i.qty,0);if(confirm(t[lang].checkoutBtn+' voor €'+tot.toFixed(2).replace('.',',')+'?')){alert('✅ Bestelling geplaatst!');cart=[];saveCart();updateCart();toggleCart()}}
+        function search(){let q=document.getElementById('searchInput').value.toLowerCase();render(q?products.filter(p=>p.nl.toLowerCase().includes(q)||p.en.toLowerCase().includes(q)||p.oem.toLowerCase().includes(q)||p.brand.includes(q)):null)}
+        function showToast(m){let e=document.createElement('div');e.className='toast';e.textContent=m;document.body.appendChild(e);setTimeout(()=>e.remove(),3000)}
+        load();updateCart();
+    </script>
+</body>
+</html>
